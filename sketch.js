@@ -1,5 +1,5 @@
 let music
-let trackAntal = 1
+let trackAntal = 2
 
 function preload(){
   
@@ -29,19 +29,28 @@ function preload(){
   }
   
   sampler = new Tone.Sampler({
-    
 	urls: piano
     
   }).toDestination();
 
-  music = loadJSON('sneaky snitch.json')
+  const reverb = new Tone.Reverb(50).toDestination();
+  sampler.connect(reverb);
+
+  music = loadJSON('hisaishi.json')
   
+
+
+
 }
 
 // Individuelle noter under: music.tracks[].notes[]
 
 function setup(){
   
+  createCanvas(400,400);
+  background(0)
+
+
   let now = Tone.now()
 
   Tone.loaded().then(() => {
@@ -64,3 +73,4 @@ function setup(){
   });
 
 }
+
