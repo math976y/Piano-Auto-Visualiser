@@ -49,10 +49,10 @@ function preload(){
     
   }).toDestination();
 
-  const reverb = new Tone.Reverb(100).toDestination();
+  const reverb = new Tone.Reverb(10).toDestination();
   sampler.connect(reverb);
 
-  music = loadJSON('hisaishi.json')
+  music = loadJSON('hisaishi-2t.json')
   
 }
 
@@ -202,7 +202,7 @@ function keyReleased(){
 
 function mousePressed(){
 
-  if(playMusic){
+  if(!playMusic){
     return
   }
 
