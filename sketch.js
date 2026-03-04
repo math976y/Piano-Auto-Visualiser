@@ -60,6 +60,9 @@ function setup(){
   createCanvas(400,400);
   background(0)
 
+}
+
+function mousePressed(){
 
   let now = Tone.now()
 
