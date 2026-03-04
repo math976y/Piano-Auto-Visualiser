@@ -1,9 +1,15 @@
 let music
 let trackAntal = 2
 
+let img
+
+let playMusic = false
+
 function preload(){
+
+  img = loadImage("pindeho.png");
   
-  synth = new Tone.PolySynth().toDestination()
+  //synth = new Tone.PolySynth().toDestination()
   
   piano = {
     
@@ -48,21 +54,157 @@ function preload(){
 
   music = loadJSON('hisaishi.json')
   
-
-
-
 }
 
 // Individuelle noter under: music.tracks[].notes[]
 
 function setup(){
   
-  createCanvas(400,400);
-  background(0)
+  img.width /= 3
+  img.height /= 3
+
+  createCanvas(img.width,img.height);
+  image(img , 0 , 0)
+  
+}
+
+function keycodeMap(k){
+  
+  switch(k){
+      
+      case 81:
+      return "C3";
+      
+      case 50:
+      return "C#3";
+      
+      case 87:
+      return "D3";
+      
+      case 51:
+      return "D#3";
+      
+      case 69:
+      return "E3";
+      
+      case 82:
+      return "F3";
+      
+      case 53:
+      return "F#3";
+      
+      case 84:
+      return "G3";
+      
+      case 54:
+      return "G#3";
+      
+      case 89:
+      return "A3";
+      
+      case 55:
+      return "A#3";
+      
+      case 85:
+      return "B3";
+      
+      case 73:
+      return "C4";
+      
+      case 57:
+      return "C#4";
+      
+      case 79:
+      return "D4";
+      
+      case 48:
+      return "D#4";
+      
+      case 80:
+      return "E4";
+      
+      case 83:
+      return "F#4";
+      
+      case 88:
+      return "G4";
+      
+      case 68:
+      return "G#4";
+      
+      case 67:
+      return "A4";
+      
+      case 70:
+      return "A#4";
+      
+      case 86:
+      return "B4";
+      
+      case 66:
+      return "C5";
+      
+      case 72:
+      return "C#5";
+      
+      case 78:
+      return "D5";
+      
+      case 74:
+      return "D#5";
+      
+      case 77:
+      return "E5";
+      
+      case 188:
+      return "F5";
+      
+      case 76:
+      return "F#5";
+      
+      case 190:
+      return "G5";
+      
+      case 192:
+      return "G#5";
+      
+      case 189:
+      return "A5";
+      
+      case 222:
+      return "A#5";
+      
+      default:
+      return 0;
+      
+  }
+  
+}
+  
+function keyPressed(){
+  
+  now = Tone.now()
+  
+  let note = keycodeMap(keyCode)
+  
+  if(note !== 0){
+    sampler.triggerAttack( note , now )
+  }
 
 }
 
+function keyReleased(){
+
+  let note = keycodeMap(keyCode)
+  sampler.triggerRelease(note)
+  
+}
+
 function mousePressed(){
+
+  if(playMusic){
+    return
+  }
 
   let now = Tone.now()
 
