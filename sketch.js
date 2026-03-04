@@ -59,9 +59,6 @@ function preload(){
 // Individuelle noter under: music.tracks[].notes[]
 
 function setup(){
-  
-  img.width /= 3
-  img.height /= 3
 
   createCanvas(img.width,img.height);
   image(img , 0 , 0)
@@ -125,6 +122,9 @@ function keycodeMap(k){
       
       case 83:
       return "F#4";
+
+      case 90:
+      return "F4";
       
       case 88:
       return "G4";
