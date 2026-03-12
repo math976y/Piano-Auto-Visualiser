@@ -210,18 +210,18 @@ function mousePressed(){
 
   Tone.loaded().then(() => {
     
-      for(let t = 0; t < trackAntal; t++){
+    for(let t = 0; t < trackAntal; t++){
     
-        for(let i = 0; i < music.tracks[t].notes.length; i++){
+      for(let i = 0; i < music.tracks[t].notes.length; i++){
 
-          let name =      music.tracks[t].notes[i].name
-          let velocity =  music.tracks[t].notes[i].velocity
-          let times =     music.tracks[t].notes[i].time
-          let durations = music.tracks[t].notes[i].duration
+        let name =      music.tracks[t].notes[i].name
+        let velocity =  music.tracks[t].notes[i].velocity
+        let times =     music.tracks[t].notes[i].time
+        let durations = music.tracks[t].notes[i].duration
 
-          sampler.triggerAttackRelease( name , durations , now + times )
+        triggerAttackReleaseSave( name , durations , times )
 
-        }
+      }
 
     }
     
@@ -229,3 +229,8 @@ function mousePressed(){
 
 }
 
+function triggerAttackReleaseSave( name , durations , times ){
+
+  sampler.triggerAttackRelease(name , durations , times)
+
+}
