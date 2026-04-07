@@ -208,8 +208,6 @@ function mousePressed(){
 
   playMusic = false
 
-  let now = Tone.now()
-
   Tone.loaded().then(() => {
     
     for(let t = 0; t < trackAntal; t++){
@@ -222,7 +220,10 @@ function mousePressed(){
         let durations = music.tracks[t].notes[i].duration
 
         setTimeout(() => {
-          triggerAttackReleaseSave( name , durations , 0 )
+
+          let now = Tone.now()
+
+          sampler.triggerAttack( name , now )
         }, times * 1000);
 
         //triggerAttackReleaseSave( name , durations , times )
