@@ -3,7 +3,7 @@ let trackAntal = 2
 
 let img
 
-let playMusic = false
+let playMusic = true
 
 function preload(){
 
@@ -206,6 +206,8 @@ function mousePressed(){
     return
   }
 
+  playMusic = false
+
   let now = Tone.now()
 
   Tone.loaded().then(() => {
@@ -219,7 +221,11 @@ function mousePressed(){
         let times =     music.tracks[t].notes[i].time
         let durations = music.tracks[t].notes[i].duration
 
-        triggerAttackReleaseSave( name , durations , times )
+        setTimeout(() => {
+          triggerAttackReleaseSave( name , durations , 0 )
+        }, times * 1000);
+
+        //triggerAttackReleaseSave( name , durations , times )
 
       }
 
