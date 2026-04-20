@@ -3,7 +3,7 @@ let trackAntal = 2
 
 let img
 
-let playMusic = true
+let playMusic = false
 
 function preload(){
 
@@ -49,7 +49,7 @@ function preload(){
     
   }).toDestination();
 
-  const reverb = new Tone.Reverb(10).toDestination();
+  const reverb = new Tone.Reverb(5).toDestination();
   sampler.connect(reverb);
 
   music = loadJSON('hisaishi-2t.json')
@@ -180,7 +180,7 @@ function keycodeMap(k){
   }
   
 }
-  
+
 function keyPressed(){
   
   now = Tone.now()
@@ -193,10 +193,20 @@ function keyPressed(){
 
 }
 
+let keys = [81,50,87,51,69,82,53,84,54,89,55,85,73,57,79,48,80,83,90,88,68,67,70,86,66,72,78,74,77,188,76,190,192,189,222]
+
 function keyReleased(){
 
-  let note = keycodeMap(keyCode)
-  sampler.triggerRelease(note)
+  for(let i = 0; i < 35; i++){
+
+    if( !keyIsDown( keys[i] ) ){
+
+      let note = keycodeMap(keys[i])
+      sampler.triggerRelease(note)
+
+    }
+
+  }
   
 }
 
@@ -214,17 +224,15 @@ function mousePressed(){
     
       for(let i = 0; i < music.tracks[t].notes.length; i++){
 
-        let name =      music.tracks[t].notes[i].name
-        let velocity =  music.tracks[t].notes[i].velocity
-        let times =     music.tracks[t].notes[i].time
-        let durations = music.tracks[t].notes[i].duration
+        let { name, velocity, time, duration } = music.tracks[t].notes[i]
 
         setTimeout(() => {
 
           let now = Tone.now()
 
           sampler.triggerAttack( name , now )
-        }, times * 1000);
+
+        }, time * 1000);
 
         //triggerAttackReleaseSave( name , durations , times )
 
