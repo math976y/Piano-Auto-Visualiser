@@ -158,14 +158,14 @@ function draw(){
   // Tid genstartes for at ungå en for høj værdi
   tid = (millis() / 1000) % 1000000
 
-  let octave = 0
+  let oktav = 0
 
   let nuværendeVarighed = 0
 
   // gennemsnit af de sidste 10 oktaver samt varighed af de sidste 10 takter
   for(let i = 0; i < previous.length; i++){
 
-    octave += octaveMap( previous[i] ) / 10
+    oktav += oktavMap( previous[i] ) / 10
 
     nuværendeVarighed += varighedGennemsnit[i] / 10
 
@@ -412,7 +412,7 @@ function keycodeMap(k){
 }
 
 // Toners oktav
-function octaveMap(s){
+function oktavMap(s){
 
   // Det sidste symbol i strengen
   let k = s[s.length -1]
