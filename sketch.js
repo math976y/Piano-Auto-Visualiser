@@ -119,7 +119,7 @@ function play(){
           sampler.triggerRelease( node )
 
           // (Varighed bør dog gemmes seperat da det samme gøres når klaveret bruges, da varigheden af noden der ikke kendes fra starten)
-          varighedGennemsnit[varighedIndex] = varighed
+          varigheder[varighedIndex] = varighed
           varighedIndex ++
           varighedIndex %= 10
 
@@ -147,63 +147,24 @@ function keyPressed(){
 }
 
 // En tidsvariabel bruges gentagende, og er derfor global
-let tid
+let tid // Defineres i draw
 
 // Kontroltid går kun op i takt med at lyd produceres
-let kontrolTid = 0
+let kontrolTid = 0 // Defineres i draw
 
-// Tegning af shader billedet foregår konstant
-function draw(){
-
-  // Tid genstartes for at ungå en for høj værdi
-  tid = (millis() / 1000) % 1000000
-
-  let oktav = 0
-
-  let nuværendeVarighed = 0
-
-  // gennemsnit af de sidste 10 oktaver samt varighed af de sidste 10 takter
-  for(let i = 0; i < previous.length; i++){
-
-    oktav += oktavMap( previous[i] ) / 10
-
-    nuværendeVarighed += varighedGennemsnit[i] / 10
-
-  }
-
-  // kontrol tid øges bestemt
-  kontrolTid += aktivitet / 10
-
-  animShader.setUniform("aktivitet" , aktivitet)
-  animShader.setUniform("oktav" , oktav)
-  animShader.setUniform("speed" , 0.5)
-  animShader.setUniform("points" , nuværendeNode)
-  animShader.setUniform("sharpness" , (1 - min(nuværendeVarighed , 2) ) / (1 + reverb) )
-
-  animShader.setUniform("time" , kontrolTid )
-
-  aktivitet = min(aktivitet , 2.) // aktivitet overgår aldrig 2
-  aktivitet /= aktivitetDec
-
-  shaderLag.rect(0)
-
-  image(shaderLag , width/2 - shaderLag.width/2 , 70)
-
-}
-
-// Egen funktion er brugt, for at gemme information om det nuværende spil
+// Egen funktion er brugt til at afspille noder, for at gemme information om det nuværende spil
 
 // Oktav
-let previous = []
-let previousIndex = 0
+let oktaver = []
+let oktaverIndex = 0
 
 // Støj
 let aktivitet = 0
-let aktivitetInc = 0.2
-let aktivitetDec = 1.01
+let aktivitetØg = 0.2
+let aktivitetAftag = 1.01
 
 // gennemsnit af varighed
-let varighedGennemsnit = [1,1,1,1,1,1,1,1,1,1]
+let varigheder = [1,1,1,1,1,1,1,1,1,1]
 let varighedIndex = 0
 
 // Nuværende node
@@ -216,38 +177,88 @@ function triggerAttackSave( node ){
   // Opsamling af data
 
   // Oktav
-  previous[previousIndex] = node
-  previousIndex ++
-  previousIndex %= 10
+  oktaver[oktaverIndex] = oktavMap(node)
+  oktaverIndex ++
+  oktaverIndex %= 10
 
   // Støj
-  aktivitet += aktivitetInc
+  aktivitet += aktivitetØg
 
   // Node
-  nuværendeNode = noteMap(node)
+  // Nodemap angiver et antal svarende til nodens type
+  nuværendeNode = nodeMap(node)
 
 }
 
-// På aftagning bør alle mulige taster checkes
+// Tegning af shader billedet foregår konstant
+function draw(){
+
+  // Tid genstartes for at ungå en for høj værdi
+  tid = (millis() / 1000) % 1000000
+
+  let oktav = 0
+  let varighed = 0
+
+  // Der tages gennemsnit af oktaven og varigheden af de sidste 10 noder
+  for(let i = 0; i < oktaver.length; i++){
+
+    oktav += oktaver[i] / 10
+
+    varighed += varigheder[i] / 10
+
+  }
+
+  // kontrol tid øges bestemt
+  kontrolTid += aktivitet / 10
+
+  // Aktivitet er betgnelsen for den nuværende støj
+  // Den har en pålagt maksimalværdi på 2, og aftager konstant
+  aktivitet = min(aktivitet , 2.)
+  aktivitet /= aktivitetAftag
+
+  // Shaderens billede er bestemt af værdierne
+  animShader.setUniform("aktivitet" , aktivitet)
+  animShader.setUniform("oktav" , oktav)
+  animShader.setUniform("rotationsFart" , 0.5)
+  animShader.setUniform("skarphed" , (1 - min(varighed , 2) ) / (1 + reverb) )
+  animShader.setUniform("takker" , nuværendeNode)
+  animShader.setUniform("tid" , kontrolTid )
+
+  // Shaderen skal have en polygon at tegne på
+  shaderLag.rect(0,0,0)
+
+  // Shaderlaget tegnes på lærredet
+  image(shaderLag , width/2 - shaderLag.width/2 , 70)
+
+}
+
+// I p5.js findes der i øjeblikket ikke en indbygget måde til at bestemme hvilken nuværende tast løftes
+// Derfor må de alle ckekkes
+
+// Alle gyldige taster
 let keys = [81,50,87,51,69,82,53,84,54,89,55,85,73,57,79,48,80,83,90,88,68,67,70,86,66,72,78,74,77,188,76,190,192,189,222]
 
 function keyReleased(){
 
   for(let i = 0; i < 35; i++){
 
+    // Det chekkes om alle taster er nede
     if( !keyIsDown( keys[i] ) ){
 
+      // Hvis tasten har et tidspunkt i varigheds listen, genstartes denne tid og varigheden noteres
       if( varighed[i] > 0 ){
 
-        varighedGennemsnit[varighedIndex] = tid - varighed[i]
+        varigheder[varighedIndex] = tid - varighed[i]
         varighedIndex ++
         varighedIndex %= 10
 
       }
 
-      let note = keycodeMap(keys[i])
-      sampler.triggerRelease(note)
+      // Den givne node stoppes
+      let node = keycodeMap(keys[i])
+      sampler.triggerRelease( node )
 
+      // Varighed overstreges
       varighed[i] = 0
 
     }
@@ -427,7 +438,8 @@ function oktavMap(s){
 
 }
 
-function noteMap(s){
+// antal takker tilsvarende noder
+function nodeMap(s){
 
   let k1 = s.substring(0,2)
   let k2 = s[0]
